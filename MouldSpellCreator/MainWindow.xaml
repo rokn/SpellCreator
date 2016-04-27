@@ -1,0 +1,187 @@
+﻿<Window x:Class="MouldSpellCreator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"        
+        xmlns:properties="clr-namespace:MouldSpellCreator.Properties"
+        xmlns:local="clr-namespace:MouldSpellCreator"
+        mc:Ignorable="d"
+        Title="Spell Creator"
+        WindowStartupLocation="Manual"
+        WindowState="Normal"
+        Left="{Binding LastPosition.X, Source={x:Static properties:Settings.Default}}"
+        Top="{Binding LastPosition.Y, Source={x:Static properties:Settings.Default}}"
+        Width="{Binding LastSize.Width, Source={x:Static properties:Settings.Default}}"
+        Height="{Binding LastSize.Height, Source={x:Static properties:Settings.Default}}">
+    
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control"
+                    Key="S"
+                    Command="local:Commands.SaveCommand" />
+    </Window.InputBindings>
+
+    <Window.CommandBindings>
+        <CommandBinding Command="local:Commands.SaveCommand" Executed="SaveProject" />
+    </Window.CommandBindings>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="8*"/>
+            <ColumnDefinition/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="2" Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="10*"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <ListBox x:Name="CurrInstructions"
+                                      ItemsSource="{Binding SelectedSpell.Instructions, UpdateSourceTrigger=PropertyChanged}"
+                                      Grid.Row="0"
+                 KeyDown="CurrInstructions_OnKeyDown">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding FriendlyName}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Label 
+                   Grid.Row="1"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   FontSize="18">
+                <Label.Content>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <Binding StringFormat="Stack size: {0}" Path="StackSize" />
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Label.Content>
+            </Label>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="8*"/>
+                <RowDefinition/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
+            <ListBox x:Name="InstructionsList"
+                                      ItemsSource="{Binding AllInstructions, UpdateSourceTrigger=PropertyChanged}"
+                                      Grid.Row="0"
+                 MouseDoubleClick="InstructionListDoubleClick"
+                 SelectionMode="Single"
+                 KeyDown="InstructionsList_OnKeyDown"
+                 SelectedItem="{Binding SelectedInstruction, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding FriendlyName}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Label Content="{Binding SelectedInstruction.FriendlyName}"
+                   Grid.Row="1"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   FontSize="23"
+                   FontWeight="Bold">
+            </Label>
+
+            <TextBlock TextWrapping="WrapWithOverflow"
+                       Text="{Binding SelectedInstruction.Description}"
+                       Grid.Row="2"
+                       FontSize="14">
+            </TextBlock>
+
+            <Label 
+                   Grid.Row="3"
+                   HorizontalContentAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   FontSize="18"
+                   FontWeight="Bold">
+                <Label.Content>
+                    <TextBlock>
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="Inputs: {0} | Outputs: {1}">
+                                <Binding Path="SelectedInstruction.Inputs" />
+                                <Binding Path="SelectedInstruction.Outputs" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                </Label.Content>
+            </Label>
+
+        </Grid>
+
+
+         <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Margin="5" FontSize="20" Click="CreateSpellClick">
+                Create Spell
+            </Button>
+
+            <Button Grid.Column="1" Margin="5" FontSize="20" Click="DeleteSpellClick">
+                Delete Spell
+            </Button>
+
+            <ComboBox Grid.Column="2"
+                      Margin="5"
+                      FontSize="20"
+                      ItemsSource="{Binding OpenedProject.Spells, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="FriendlyName"
+                      SelectedValue="{Binding Path=SelectedSpell, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            </ComboBox>
+
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name ="UpButton"
+                    FontSize="25"
+                    Margin="0 20"
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Click="MoveInstructionClick">
+                ↑
+            </Button>
+
+            <Button x:Name="DownButton"
+                    FontSize="25"
+                    Margin="0 20"
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Click="MoveInstructionClick">
+                ↓
+            </Button>
+        </Grid>
+
+    </Grid>
+</Window>
